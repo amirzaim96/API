@@ -10,16 +10,16 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 
 app.post('/', async (req, res) => {
-    console.log(req.body)
-    let typeChoice = req.body['type'];
-    let partiChoice = req.body['participants'];
     try {
+        console.log(req.body)
+        let typeChoice = req.body['type'];
+        let partiChoice = req.body['participants'];
         let response = await axios.get(`http://localhost:4000/filter?type=${typeChoice}&participants=${partiChoice}`)
         let result = response.data[Math.floor(Math.random() * response.data.length)];
         console.log(result);
         res.render('index.ejs', {info: result});
     } catch (error) {
-        console.log('Failed to make request', error.message);
+        console.log('No activities that match your criteria', error.message);
         res.render('index.ejs', {error: error.message})
     }
 })
