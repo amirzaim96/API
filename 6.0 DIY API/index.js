@@ -48,6 +48,7 @@ app.put('/jokes/:id', (req, res) => {
     jokeType: req.body.type,
   };
 
+  // let searchIndex = jokes.findIndex((joke) => joke.id === num);
   jokes[num] = newJoke;
   res.json(newJoke);
 
@@ -56,28 +57,45 @@ app.put('/jokes/:id', (req, res) => {
 //6. PATCH a joke
 app.patch('/jokes/:id', (req, res) => {
   let num = parseInt(req.params.id);
-  let replace = {};
-  if (req.body.text) {
-      replace = {
-      id: num,
-      jokeText: req.body.text,
-      jokeType: jokes[num].jokeType,
-    }
-  }
-  if (req.body.type) {
-    replace = {
+  let existingJoke = jokes.find((joke) => joke.id === num)
+  let patchJoke = {
     id: num,
-    jokeText: jokes[num].jokeText,
-    jokeType: req.body.type ,
+    jokeText: req.body.text || existingJoke.jokeText,
+    jokeType: req.body.type || existingJoke.jokeType,
   }
-}  
 
-  res.json(replace);
+  jokes[num] = patchJoke;
+  res.json(patchJoke);
 })
 
 //7. DELETE Specific joke
+app.delete('/jokes/:id', (req, res) => {
+  let num = parseInt(req.params.id);
+  let searchIndex = jokes.findIndex((joke) => joke.id === num)
+  if (searchIndex > -1) {
+    jokes.splice(searchIndex, 1);
+    res.sendStatus(200)
+  } else {
+    res
+    .status(404)
+    .json({error: `Jokes ${id} not found.`})
+  }
+})
+
 
 //8. DELETE All jokes
+app.delete('/all', (req, res) => {
+  let userKey = req.query.key;
+  if ( userKey === masterKey )  {
+    jokes = [];
+    res.sendStatus(200);
+  } else {
+    res
+    .status(404)
+    .json({error: `dasdasdadasdas`})
+  }
+  
+})
 
 app.listen(port, () => {
   console.log(`Successfully started server on port ${port}.`);
